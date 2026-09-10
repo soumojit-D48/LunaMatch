@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
 
 const LINKS = [
   { href: "#problem", label: "Problem" },
@@ -80,6 +81,7 @@ export function Nav() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <a
               href="#deliverables"
               className="hidden rounded-md bg-bone px-4 py-2 font-mono text-xs font-medium text-void ring-1 ring-white/20 transition-colors hover:bg-white sm:inline-block"
