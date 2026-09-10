@@ -78,6 +78,10 @@ export function Nav() {
                 />
               </a>
             ))}
+            <a href="/jobs" className="relative py-1 text-signal transition-colors hover:text-bone">
+              Console
+              <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-signal transition-all duration-300" />
+            </a>
           </nav>
 
           <div className="flex items-center gap-2">
