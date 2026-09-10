@@ -14,7 +14,7 @@ import { Sensors } from "@/components/landing/sensors";
 
 const TITLE = "LunaMatch — Chandrayaan-2 lunar image registration";
 const DESCRIPTION =
-  "Sun-angle, scale and viewpoint invariant image correspondence between Chandrayaan-2 optical imagery (OHRC, TMC-2, IIRS) and lunar reference frames. SIH problem statement 26166.";
+  "Sun-angle, scale and viewpoint invariant image correspondence between Chandrayaan-2 optical imagery (OHRC, TMC-2, IIRS) and lunar reference frames.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 
 export default function Index() {
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-void text-bone">
+    <div className="relative min-h-screen overflow-x-clip bg-void text-bone">
       <div aria-hidden className="scanline pointer-events-none fixed inset-0 z-0 opacity-50" />
       <div
         aria-hidden

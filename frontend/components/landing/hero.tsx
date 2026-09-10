@@ -20,7 +20,7 @@ export function Hero() {
             className="inline-flex items-center gap-2 rounded-full px-3 py-1 font-mono text-[11px] tracking-[0.18em] text-signal ring-1 ring-signal/25"
           >
             <span className="reticle size-1.5 rounded-full bg-signal" />
-            SMART INDIA HACKATHON · PS 26166
+            SUN-ANGLE · SCALE · VIEWPOINT INVARIANT
           </motion.div>
 
           <h1 className="mt-6 text-[2.4rem] font-semibold leading-[1.04] tracking-tight text-balance sm:text-[3.1rem] xl:text-[3.5rem]">
