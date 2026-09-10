@@ -11,6 +11,7 @@ import { Impact } from "@/components/landing/impact";
 import { Closing, SiteFooter } from "@/components/landing/closing";
 import { Metrics } from "@/components/landing/metrices";
 import { Sensors } from "@/components/landing/sensors";
+import { Boot } from "@/components/landing/boot";
 
 const TITLE = "LunaMatch — Chandrayaan-2 lunar image registration";
 const DESCRIPTION =
@@ -43,6 +44,7 @@ export default function Index() {
       />
 
       <div className="relative z-10">
+        <Boot />
         <Nav />
         <main>
           <Hero />

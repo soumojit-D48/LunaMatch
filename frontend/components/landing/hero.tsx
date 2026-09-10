@@ -4,6 +4,7 @@ import { animate, motion, useInView, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { HeroVisual } from "./hero-visual";
+import { useBootStore } from "@/store/boot-store";
 
 const WORDS = ["Different", "sun.", "Different", "scale.", "Same", "ground."];
 
@@ -23,10 +24,11 @@ function Stat({
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
   const reduced = useReducedMotion();
+  const booted = useBootStore((s) => s.booted);
   const [display, setDisplay] = useState(`${prefix}0${suffix}`);
 
   useEffect(() => {
-    if (!inView) return;
+    if (!inView || !booted) return;
     if (reduced) {
       setDisplay(`${prefix}${value}${suffix}`);
       return;
@@ -37,7 +39,7 @@ function Stat({
       onUpdate: (v) => setDisplay(`${prefix}${Math.round(v)}${suffix}`),
     });
     return () => controls.stop();
-  }, [inView, reduced, value, prefix, suffix]);
+  }, [inView, booted, reduced, value, prefix, suffix]);
 
   return (
     <div ref={ref}>
@@ -50,6 +52,7 @@ function Stat({
 
 export function Hero() {
   const reduced = useReducedMotion();
+  const booted = useBootStore((s) => s.booted);
 
   return (
     <section id="top" className="relative">
@@ -57,7 +60,7 @@ export function Hero() {
         <div className="max-w-[48ch]">
           <motion.div
             initial={reduced ? false : { opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={booted ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 rounded-full px-3 py-1 font-mono text-[11px] tracking-[0.18em] text-signal ring-1 ring-signal/25"
           >
@@ -75,7 +78,7 @@ export function Hero() {
                     : ""
                 }`}
                 initial={reduced ? false : { opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
+                animate={booted ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.1 + i * 0.07, ease: [0.22, 0.61, 0.36, 1] }}
               >
                 {word}
@@ -86,7 +89,7 @@ export function Hero() {
 
           <motion.p
             initial={reduced ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={booted ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.55 }}
             className="mt-5 max-w-[46ch] text-pretty text-base text-mist sm:text-lg"
           >
@@ -98,7 +101,7 @@ export function Hero() {
 
           <motion.div
             initial={reduced ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={booted ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.65 }}
             className="mt-8 flex flex-wrap items-center gap-3"
           >
@@ -119,7 +122,7 @@ export function Hero() {
 
           <motion.dl
             initial={reduced ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={booted ? { opacity: 1 } : {}}
             transition={{ duration: 0.6, delay: 0.8 }}
             className="mt-9 grid max-w-md grid-cols-3 gap-4 border-t border-line/60 pt-5"
           >

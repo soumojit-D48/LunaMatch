@@ -1,10 +1,11 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import sourceTile from "@/assets/lunar-source.jpg";
 import referenceTile from "@/assets/lunar-reference.jpg";
+import { useBootStore } from "@/store/boot-store";
 
 /**
  * Schematic of the correspondence step: keypoints detected in the
@@ -40,6 +41,18 @@ function project([x, y]: readonly [number, number]) {
 
 export function HeroVisual() {
     const reduced = useReducedMotion();
+    const booted = useBootStore((s) => s.booted);
+    const [cycle, setCycle] = useState(0);
+
+    // Replay the full draw sequence on a loop once the boot handoff is done.
+    // Remounting the overlay via `key` keeps every dot and line in sync.
+    useEffect(() => {
+        if (!booted || reduced) return;
+        const id = setInterval(() => {
+            if (!document.hidden) setCycle((c) => c + 1);
+        }, 6500); // milliseconds per loop (change or controll the timing)
+        return () => clearInterval(id);
+    }, [booted, reduced]);
 
     const pairs = useMemo(
         () =>
@@ -93,6 +106,7 @@ export function HeroVisual() {
                     </div>
 
                     <svg
+                        key={cycle}
                         aria-hidden
                         viewBox={`0 0 ${TILE * 2 + GAP} ${TILE}`}
                         preserveAspectRatio="none"
@@ -121,7 +135,7 @@ export function HeroVisual() {
                                 strokeLinecap="round"
                                 filter="url(#hv-line-glow)"
                                 initial={reduced ? false : { pathLength: 0, opacity: 0 }}
-                                animate={{ pathLength: 1, opacity: 1 }}
+                                animate={booted ? { pathLength: 1, opacity: 1 } : {}}
                                 transition={{ duration: 1.6, delay: 0.6 + i * 0.18, ease: "easeInOut" }}
                             />
                         ))}
@@ -134,7 +148,7 @@ export function HeroVisual() {
                                     fill="var(--signal)"
                                     fillOpacity={0.22}
                                     initial={reduced ? false : { scale: 0, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
+                                    animate={booted ? { scale: 1, opacity: 1 } : {}}
                                     transition={{ duration: 0.4, delay: 0.4 + i * 0.18 }}
                                     style={{ transformOrigin: `${pair.from[0]}px ${pair.from[1]}px` }}
                                 />
@@ -146,7 +160,7 @@ export function HeroVisual() {
                                     stroke="var(--void)"
                                     strokeWidth={0.9}
                                     initial={reduced ? false : { scale: 0, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
+                                    animate={booted ? { scale: 1, opacity: 1 } : {}}
                                     transition={{ duration: 0.4, delay: 0.4 + i * 0.18 }}
                                     style={{ transformOrigin: `${pair.from[0]}px ${pair.from[1]}px` }}
                                 />
@@ -157,7 +171,7 @@ export function HeroVisual() {
                                     fill="var(--flare)"
                                     fillOpacity={0.22}
                                     initial={reduced ? false : { scale: 0, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
+                                    animate={booted ? { scale: 1, opacity: 1 } : {}}
                                     transition={{ duration: 0.4, delay: 1.9 + i * 0.18 }}
                                     style={{ transformOrigin: `${pair.to[0]}px ${pair.to[1]}px` }}
                                 />
@@ -169,7 +183,7 @@ export function HeroVisual() {
                                     stroke="var(--void)"
                                     strokeWidth={0.9}
                                     initial={reduced ? false : { scale: 0, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
+                                    animate={booted ? { scale: 1, opacity: 1 } : {}}
                                     transition={{ duration: 0.4, delay: 1.9 + i * 0.18 }}
                                     style={{ transformOrigin: `${pair.to[0]}px ${pair.to[1]}px` }}
                                 />
