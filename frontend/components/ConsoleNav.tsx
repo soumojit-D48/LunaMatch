@@ -6,7 +6,6 @@ import { ThemeToggle } from "@/components/landing/theme-toggle";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
-  { href: "/", label: "Landing" },
   { href: "/jobs", label: "Jobs" },
   { href: "/compare", label: "Compare" },
 ];

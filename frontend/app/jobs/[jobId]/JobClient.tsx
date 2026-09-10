@@ -61,18 +61,42 @@ function Progress({ stage }: { stage: string }) {
       <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-void/70">
         <div className="h-full rounded-full bg-signal transition-all duration-700" style={{ width: `${pct}%` }} />
       </div>
-      <div className="mt-3 flex flex-wrap gap-1.5">
-        {STAGES.map((s, i) => (
-          <span
-            key={s}
-            className={`rounded px-1.5 py-0.5 font-mono text-[9px] tracking-wide ${
-              i <= idx ? "bg-signal/15 text-signal" : "bg-void/50 text-ash"
-            }`}
-          >
-            {s.replaceAll("_", " ")}
-          </span>
-        ))}
-      </div>
+      <ol className="mt-4">
+        {STAGES.map((s, i) => {
+          const done = i < idx;
+          const current = i === idx;
+          return (
+            <li key={s} className="relative flex gap-3 pb-4 last:pb-0">
+              {i < STAGES.length - 1 && (
+                <span
+                  aria-hidden
+                  className={`absolute left-[5px] top-4 h-[calc(100%-1rem)] w-px ${i < idx ? "bg-signal/60" : "bg-line/60"}`}
+                />
+              )}
+              <span
+                aria-hidden
+                className={`mt-1 size-[11px] shrink-0 rounded-full ring-1 ${
+                  done
+                    ? "bg-signal ring-signal/40"
+                    : current
+                      ? "reticle bg-signal ring-signal/40"
+                      : "bg-void ring-line"
+                }`}
+              />
+              <span className="flex w-full items-center justify-between gap-3">
+                <span
+                  className={`font-mono text-[11px] tracking-[0.1em] ${current ? "text-signal" : done ? "text-bone" : "text-ash"}`}
+                >
+                  {s.replaceAll("_", " ").toUpperCase()}
+                </span>
+                <span className="font-mono text-[10px] text-ash">
+                  {done ? "DONE" : current ? "RUNNING…" : `STEP ${i + 1}/${STAGES.length}`}
+                </span>
+              </span>
+            </li>
+          );
+        })}
+      </ol>
       <p className="mt-3 font-mono text-[10px] text-mist">Polling job status every 2s…</p>
     </div>
   );

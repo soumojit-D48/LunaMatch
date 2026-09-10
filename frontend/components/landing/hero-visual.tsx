@@ -58,6 +58,10 @@ export function HeroVisual() {
                 style={{ transform: "skewY(-1.5deg) skewX(-0.6deg)" }}
             />
             <div className="panel-glass relative overflow-hidden rounded-xl p-3 ring-1 ring-white/10">
+                <span aria-hidden className="pointer-events-none absolute left-1.5 top-1.5 z-10 size-4 border-l-2 border-t-2 border-signal/70" />
+                <span aria-hidden className="pointer-events-none absolute right-1.5 top-1.5 z-10 size-4 border-r-2 border-t-2 border-signal/70" />
+                <span aria-hidden className="pointer-events-none absolute bottom-1.5 left-1.5 z-10 size-4 border-b-2 border-l-2 border-signal/70" />
+                <span aria-hidden className="pointer-events-none absolute bottom-1.5 right-1.5 z-10 size-4 border-b-2 border-r-2 border-signal/70" />
                 <div className="flex items-center justify-between px-1 pb-2 font-mono text-[10px] tracking-[0.14em] text-ash">
                     <span>SOURCE · CH-2 OHRC</span>
                     <span className="text-signal">REFERENCE · LRO NAC</span>
@@ -94,6 +98,15 @@ export function HeroVisual() {
                         preserveAspectRatio="none"
                         className="pointer-events-none absolute inset-0 h-full w-full"
                     >
+                        <defs>
+                            <filter id="hv-line-glow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="1.1" result="blur" />
+                                <feMerge>
+                                    <feMergeNode in="blur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
+                        </defs>
                         {pairs.map((pair, i) => (
                             <motion.line
                                 key={i}
@@ -102,12 +115,14 @@ export function HeroVisual() {
                                 x2={pair.to[0]}
                                 y2={pair.to[1]}
                                 stroke="var(--signal)"
-                                strokeWidth={0.6}
+                                strokeWidth={0.9}
                                 vectorEffect="non-scaling-stroke"
-                                strokeOpacity={0.75}
+                                strokeOpacity={0.95}
+                                strokeLinecap="round"
+                                filter="url(#hv-line-glow)"
                                 initial={reduced ? false : { pathLength: 0, opacity: 0 }}
                                 animate={{ pathLength: 1, opacity: 1 }}
-                                transition={{ duration: 0.8, delay: 0.5 + i * 0.12, ease: "easeOut" }}
+                                transition={{ duration: 1.6, delay: 0.6 + i * 0.18, ease: "easeInOut" }}
                             />
                         ))}
                         {pairs.map((pair, i) => (
@@ -115,21 +130,47 @@ export function HeroVisual() {
                                 <motion.circle
                                     cx={pair.from[0]}
                                     cy={pair.from[1]}
-                                    r={1.6}
+                                    r={4.4}
                                     fill="var(--signal)"
+                                    fillOpacity={0.22}
                                     initial={reduced ? false : { scale: 0, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
-                                    transition={{ duration: 0.3, delay: 0.4 + i * 0.12 }}
+                                    transition={{ duration: 0.4, delay: 0.4 + i * 0.18 }}
+                                    style={{ transformOrigin: `${pair.from[0]}px ${pair.from[1]}px` }}
+                                />
+                                <motion.circle
+                                    cx={pair.from[0]}
+                                    cy={pair.from[1]}
+                                    r={2.2}
+                                    fill="var(--signal)"
+                                    stroke="var(--void)"
+                                    strokeWidth={0.9}
+                                    initial={reduced ? false : { scale: 0, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{ duration: 0.4, delay: 0.4 + i * 0.18 }}
                                     style={{ transformOrigin: `${pair.from[0]}px ${pair.from[1]}px` }}
                                 />
                                 <motion.circle
                                     cx={pair.to[0]}
                                     cy={pair.to[1]}
-                                    r={1.6}
+                                    r={4.4}
                                     fill="var(--flare)"
+                                    fillOpacity={0.22}
                                     initial={reduced ? false : { scale: 0, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
-                                    transition={{ duration: 0.3, delay: 1.2 + i * 0.12 }}
+                                    transition={{ duration: 0.4, delay: 1.9 + i * 0.18 }}
+                                    style={{ transformOrigin: `${pair.to[0]}px ${pair.to[1]}px` }}
+                                />
+                                <motion.circle
+                                    cx={pair.to[0]}
+                                    cy={pair.to[1]}
+                                    r={2.2}
+                                    fill="var(--flare)"
+                                    stroke="var(--void)"
+                                    strokeWidth={0.9}
+                                    initial={reduced ? false : { scale: 0, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{ duration: 0.4, delay: 1.9 + i * 0.18 }}
                                     style={{ transformOrigin: `${pair.to[0]}px ${pair.to[1]}px` }}
                                 />
                             </g>

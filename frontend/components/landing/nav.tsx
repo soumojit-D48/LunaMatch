@@ -78,19 +78,15 @@ export function Nav() {
                 />
               </a>
             ))}
-            <a href="/jobs" className="relative py-1 text-signal transition-colors hover:text-bone">
-              Console
-              <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-signal transition-all duration-300" />
-            </a>
           </nav>
 
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <a
-              href="#deliverables"
+              href="/jobs"
               className="hidden rounded-md bg-bone px-4 py-2 font-mono text-xs font-medium text-void ring-1 ring-white/20 transition-colors hover:bg-white sm:inline-block"
             >
-              Deliverables
+              Console
             </a>
             <button
               type="button"
@@ -131,11 +127,11 @@ export function Nav() {
             </a>
           ))}
           <a
-            href="#deliverables"
+            href="/jobs"
             onClick={() => setOpen(false)}
             className="mt-3 block rounded-md bg-bone px-4 py-2 text-center text-xs font-medium text-void"
           >
-            Deliverables
+            Console
           </a>
         </nav>
       ) : null}

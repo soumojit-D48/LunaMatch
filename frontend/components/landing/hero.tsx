@@ -1,17 +1,59 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { animate, motion, useInView, useReducedMotion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { HeroVisual } from "./hero-visual";
 
 const WORDS = ["Different", "sun.", "Different", "scale.", "Same", "ground."];
+
+function Stat({
+  value,
+  prefix = "",
+  suffix = "",
+  sr,
+  label,
+}: {
+  value: number;
+  prefix?: string;
+  suffix?: string;
+  sr: string;
+  label: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const reduced = useReducedMotion();
+  const [display, setDisplay] = useState(`${prefix}0${suffix}`);
+
+  useEffect(() => {
+    if (!inView) return;
+    if (reduced) {
+      setDisplay(`${prefix}${value}${suffix}`);
+      return;
+    }
+    const controls = animate(0, value, {
+      duration: 1.4,
+      ease: [0.22, 0.61, 0.36, 1],
+      onUpdate: (v) => setDisplay(`${prefix}${Math.round(v)}${suffix}`),
+    });
+    return () => controls.stop();
+  }, [inView, reduced, value, prefix, suffix]);
+
+  return (
+    <div ref={ref}>
+      <dt className="sr-only">{sr}</dt>
+      <dd className="tabular font-mono text-lg text-bone">{display}</dd>
+      <dd className="font-mono text-[10px] tracking-[0.12em] text-ash">{label}</dd>
+    </div>
+  );
+}
 
 export function Hero() {
   const reduced = useReducedMotion();
 
   return (
     <section id="top" className="relative">
-      <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 pb-16 pt-12 sm:px-8 sm:pb-24 sm:pt-16 lg:grid-cols-[1.05fr_1fr] lg:gap-12">
+      <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 pb-16 pt-12 sm:px-8 sm:pb-24 sm:pt-16 lg:grid-cols-[0.88fr_1.18fr] lg:gap-10">
         <div className="max-w-[48ch]">
           <motion.div
             initial={reduced ? false : { opacity: 0, y: 10 }}
@@ -27,7 +69,11 @@ export function Hero() {
             {WORDS.map((word, i) => (
               <motion.span
                 key={i}
-                className={`inline-block ${i > 3 ? "text-signal" : ""}`}
+                className={`inline-block ${
+                  i > 3
+                    ? "text-signal [text-shadow:0_0_32px_color-mix(in_oklab,var(--signal)_60%,transparent)]"
+                    : ""
+                }`}
                 initial={reduced ? false : { opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 + i * 0.07, ease: [0.22, 0.61, 0.36, 1] }}
@@ -58,7 +104,7 @@ export function Hero() {
           >
             <a
               href="#pipeline"
-              className="group inline-flex items-center gap-2 rounded-md bg-signal px-5 py-3 font-mono text-sm font-semibold text-void ring-1 ring-signal/40 transition-colors hover:bg-bone"
+              className="group inline-flex items-center gap-2 rounded-md bg-signal px-5 py-3 font-mono text-sm font-semibold text-void ring-1 ring-signal/40 transition-all hover:bg-bone hover:shadow-[0_8px_32px_-8px_var(--bone)] shadow-[0_8px_32px_-8px_var(--signal)]"
             >
               Walk the pipeline
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
@@ -77,31 +123,15 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.8 }}
             className="mt-9 grid max-w-md grid-cols-3 gap-4 border-t border-line/60 pt-5"
           >
-            <div>
-              <dt className="sr-only">Scale gap between the coarsest and finest sensors</dt>
-              <dd className="tabular font-mono text-lg text-bone">~300×</dd>
-              <dd className="font-mono text-[10px] tracking-[0.12em] text-ash">
-                SCALE GAP IIRS↔OHRC
-              </dd>
-            </div>
-            <div>
-              <dt className="sr-only">Chandrayaan-2 optical payloads supported as source</dt>
-              <dd className="tabular font-mono text-lg text-bone">3</dd>
-              <dd className="font-mono text-[10px] tracking-[0.12em] text-ash">
-                CH-2 SOURCE SENSORS
-              </dd>
-            </div>
-            <div>
-              <dt className="sr-only">Required deliverables</dt>
-              <dd className="tabular font-mono text-lg text-bone">3</dd>
-              <dd className="font-mono text-[10px] tracking-[0.12em] text-ash">
-                REQUIRED OUTPUTS
-              </dd>
-            </div>
+            <Stat value={300} prefix="~" suffix="×" sr="Scale gap between the coarsest and finest sensors" label="SCALE GAP IIRS↔OHRC" />
+            <Stat value={3} sr="Chandrayaan-2 optical payloads supported as source" label="CH-2 SOURCE SENSORS" />
+            <Stat value={3} sr="Required deliverables" label="REQUIRED OUTPUTS" />
           </motion.dl>
         </div>
 
-        <HeroVisual />
+        <div className="lg:-mt-25">
+          <HeroVisual />
+        </div>
       </div>
     </section>
   );
