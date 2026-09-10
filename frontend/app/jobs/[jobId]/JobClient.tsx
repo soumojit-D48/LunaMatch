@@ -1,0 +1,147 @@
+"use client";
+
+import Link from "next/link";
+import { ArrowLeft, Download } from "lucide-react";
+import { STAGES, MATCHER_LABELS, type JobResult } from "@/lib/mock-data";
+import { useJob } from "@/hooks/use-job";
+import { JobStatusBadge } from "@/components/jobs/JobStatusBadge";
+import { ConsoleNav } from "@/components/ConsoleNav";
+import { MatchViewer } from "@/components/viewer/MatchViewer";
+import { CoverageGrid, MetricCards } from "@/components/metrics/MetricCards";
+import sourceImg from "@/assets/lunar-source.jpg";
+import referenceImg from "@/assets/lunar-reference.jpg";
+
+function download(name: string, text: string, type: string) {
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function Downloads({ result }: { result: JobResult }) {
+  const csv = [
+    "id,src_x,src_y,ref_x,ref_y,confidence,is_inlier",
+    ...result.matches.map((m) =>
+      [m.id, m.srcX.toFixed(4), m.srcY.toFixed(4), m.refX.toFixed(4), m.refY.toFixed(4), m.confidence.toFixed(3), m.isInlier].join(","),
+    ),
+  ].join("\n");
+  return (
+    <div className="flex flex-wrap gap-2">
+      <button
+        type="button"
+        onClick={() => download(`${result.job.id}-matches.csv`, csv, "text/csv")}
+        className="inline-flex items-center gap-2 rounded-md px-4 py-2 font-mono text-xs text-bone ring-1 ring-line transition-colors hover:ring-mist"
+      >
+        <Download className="size-3.5" /> Match points CSV
+      </button>
+      <button
+        type="button"
+        onClick={() =>
+          download(`${result.job.id}-report.json`, JSON.stringify({ job: result.job, transform: result.transform, report: result.report }, null, 2), "application/json")
+        }
+        className="inline-flex items-center gap-2 rounded-md px-4 py-2 font-mono text-xs text-bone ring-1 ring-line transition-colors hover:ring-mist"
+      >
+        <Download className="size-3.5" /> Report JSON
+      </button>
+    </div>
+  );
+}
+
+function Progress({ stage }: { stage: string }) {
+  const idx = STAGES.indexOf(stage as (typeof STAGES)[number]);
+  const pct = idx < 0 ? 4 : Math.round(((idx + 1) / STAGES.length) * 100);
+  return (
+    <div className="panel-glass rounded-xl p-5 ring-1 ring-white/10">
+      <div className="flex items-center justify-between font-mono text-[11px] tracking-[0.14em]">
+        <span className="text-ash">PIPELINE STAGE</span>
+        <span className="text-signal">{stage.replaceAll("_", " ").toUpperCase()}</span>
+      </div>
+      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-void/70">
+        <div className="h-full rounded-full bg-signal transition-all duration-700" style={{ width: `${pct}%` }} />
+      </div>
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {STAGES.map((s, i) => (
+          <span
+            key={s}
+            className={`rounded px-1.5 py-0.5 font-mono text-[9px] tracking-wide ${
+              i <= idx ? "bg-signal/15 text-signal" : "bg-void/50 text-ash"
+            }`}
+          >
+            {s.replaceAll("_", " ")}
+          </span>
+        ))}
+      </div>
+      <p className="mt-3 font-mono text-[10px] text-mist">Polling job status every 2s…</p>
+    </div>
+  );
+}
+
+export default function JobDetail({ id }: { id: string }) {
+  const { job, result, error } = useJob(id);
+
+  return (
+    <div className="relative min-h-screen bg-void text-bone">
+      <ConsoleNav />
+      <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8">
+        <Link href="/jobs" className="inline-flex items-center gap-2 font-mono text-xs text-mist transition-colors hover:text-bone">
+          <ArrowLeft className="size-3.5" /> ALL JOBS
+        </Link>
+
+        {error ? (
+          <p className="mt-8 font-mono text-sm text-destructive">Failed to load job: {error}</p>
+        ) : !job ? (
+          <p className="mt-8 font-mono text-sm text-mist">Loading job…</p>
+        ) : (
+          <div className="mt-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <JobStatusBadge status={job.status} />
+              <span className="font-mono text-[11px] text-ash">{job.id}</span>
+            </div>
+            <h1 className="mt-2 max-w-[30ch] text-3xl font-semibold tracking-tight sm:text-4xl">{job.pairLabel}</h1>
+            <p className="mt-2 font-mono text-xs text-mist">
+              {MATCHER_LABELS[job.matcherType]} · {job.transformModel} · GSD {job.meta.sourceGsdM} → {job.meta.referenceGsdM} m/px · Δsun {job.meta.sunDeltaDeg}°
+            </p>
+
+            {job.status === "FAILED" ? (
+              <div className="mt-6 rounded-xl bg-destructive/10 p-5 font-mono text-xs leading-relaxed text-destructive ring-1 ring-destructive/30">
+                FAILED AT {job.currentStage.toUpperCase()} — {job.errorMessage}
+              </div>
+            ) : null}
+
+            {(job.status === "PENDING" || job.status === "RUNNING") && (
+              <div className="mt-6"><Progress stage={job.currentStage} /></div>
+            )}
+
+            {result && (
+              <div className="mt-8 space-y-8">
+                <section>
+                  <h2 className="mb-3 font-mono text-[11px] tracking-[0.2em] text-signal">MATCH EVIDENCE</h2>
+                  <MatchViewer matches={result.matches} sourceImg={sourceImg} referenceImg={referenceImg} />
+                </section>
+                <section>
+                  <h2 className="mb-3 font-mono text-[11px] tracking-[0.2em] text-signal">EVALUATION</h2>
+                  <div className="grid gap-3 lg:grid-cols-[1fr_280px]">
+                    <MetricCards report={result.report} />
+                    <CoverageGrid matches={result.matches} />
+                  </div>
+                </section>
+                <section>
+                  <h2 className="mb-3 font-mono text-[11px] tracking-[0.2em] text-signal">TRANSFORM · {result.transform.modelType.toUpperCase()}</h2>
+                  <pre className="overflow-x-auto rounded-xl bg-void/60 p-4 font-mono text-[11px] leading-relaxed text-mist ring-1 ring-line">
+                    {JSON.stringify(result.transform.parameters, null, 2)}
+                  </pre>
+                </section>
+                <section>
+                  <h2 className="mb-3 font-mono text-[11px] tracking-[0.2em] text-signal">DOWNLOADS</h2>
+                  <Downloads result={result} />
+                </section>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
