@@ -8,6 +8,10 @@ dist/
 build/
 .turbo/
 .vercel/
+coverage/
+*.pem
+*.tsbuildinfo
+next-env.d.ts
 
 # npm / pnpm / yarn / bun
 .npm/
