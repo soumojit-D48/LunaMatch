@@ -29,7 +29,7 @@ export function Impact() {
     <section className="border-t border-line/60 bg-surface/50">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
         <SectionHeading
-          index="07"
+          index="09"
           eyebrow="WHY IT MATTERS"
           title="Registration is infrastructure. Everything sits on top of it."
         />

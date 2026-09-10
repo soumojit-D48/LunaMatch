@@ -29,7 +29,7 @@ export function Alignment() {
         <section id="alignment" className="scroll-mt-24 border-t border-line/60">
             <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
                 <SectionHeading
-                    index="04"
+                    index="05"
                     eyebrow="ALIGNMENT"
                     title="Drag the handle and watch the rims settle."
                     note="Left of the handle: the source as acquired. Right: the same source after the fitted transform."

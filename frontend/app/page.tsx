@@ -9,6 +9,8 @@ import { Deliverables } from "@/components/landing/deliverables";
 import { Architecture } from "@/components/landing/architecture";
 import { Impact } from "@/components/landing/impact";
 import { Closing, SiteFooter } from "@/components/landing/closing";
+import { Metrics } from "@/components/landing/metrices";
+import { Sensors } from "@/components/landing/sensors";
 
 const TITLE = "LunaMatch — Chandrayaan-2 lunar image registration";
 const DESCRIPTION =
@@ -45,9 +47,11 @@ export default function Index() {
         <main>
           <Hero />
           <Problem />
+          <Sensors />
           <Approach />
           <Pipeline />
           <Alignment />
+          <Metrics />
           <Deliverables />
           <Architecture />
           <Impact />

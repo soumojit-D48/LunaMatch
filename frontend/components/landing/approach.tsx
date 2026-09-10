@@ -33,7 +33,7 @@ export function Approach() {
     <section id="approach" className="scroll-mt-24 border-t border-line/60">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
         <SectionHeading
-          index="02"
+          index="03"
           eyebrow="THE CORE IDEA"
           title="Solve correspondence first. Warping is the easy half."
           note="Once trustworthy point pairs exist, fitting and resampling are solved problems. Everything here is aimed at the pairs."

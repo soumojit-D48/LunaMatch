@@ -11,7 +11,7 @@ export function Closing() {
       />
       <div className="relative mx-auto max-w-3xl px-5 py-20 text-center sm:px-8 sm:py-28">
         <Reveal>
-          <div className="font-mono text-[11px] tracking-[0.2em] text-signal">08 — FINAL</div>
+          <div className="font-mono text-[11px] tracking-[0.2em] text-signal">10 — FINAL</div>
           <h2 className="mt-4 text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
             Put every Chandrayaan-2 frame on the same grid.
           </h2>

@@ -125,7 +125,7 @@ export function Pipeline() {
     <section id="pipeline" className="scroll-mt-24 border-t border-line/60 bg-surface/50">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
         <SectionHeading
-          index="03"
+          index="04"
           eyebrow="HOW IT WORKS"
           title="Eleven stages, from raw product to a scored registration."
           note="Select a stage to see what enters it and what leaves it."

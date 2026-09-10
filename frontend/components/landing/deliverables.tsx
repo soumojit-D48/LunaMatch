@@ -45,7 +45,7 @@ export function Deliverables() {
     <section id="deliverables" className="scroll-mt-24 border-t border-line/60 bg-surface/50">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
         <SectionHeading
-          index="05"
+          index="07"
           eyebrow="CAPABILITIES"
           title="What the system is built to do."
           note="Each capability maps to a requirement written into the problem statement."
