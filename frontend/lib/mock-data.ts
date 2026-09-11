@@ -35,6 +35,7 @@ export type EvaluationReport = {
 export type ImagePairMeta = {
   sourceSensor: "OHRC" | "TMC-2" | "IIRS";
   referenceSensor: "LRO NAC" | "SELENE TC";
+  referenceFrameId?: string; // archive frame auto-matched — user never uploads this
   sourceGsdM: number;
   referenceGsdM: number;
   sourceSunElevationDeg: number;
@@ -251,6 +252,21 @@ export const JOB_FIXTURES: JobFixture[] = [
     report: { rmseX: 0, rmseY: 0, inlierCount: 0, inlierRatio: 0, coverageScore: 0, processingTimeS: 0, reliability: "high" },
   },
 ];
+
+// Archive frames auto-matched per job (reference is never user-uploaded).
+const ARCHIVE_FRAMES: Record<string, string> = {
+  "job-7f3a-ohrc-nac": "M1414653521LE",
+  "job-9c1e-tmc2-nac": "M1183457892RE",
+  "job-44b2-ohrc-polar": "M1357924680LE",
+  "job-51d8-iirs-wac": "TCO_MAP_02_N42E015",
+  "job-88f0-ohrc-night": "M1092837465LE",
+  "job-b2c7-ohrc-selene": "TCO_MAP_02_S18E122",
+};
+
+for (const f of JOB_FIXTURES) {
+  f.job.meta.referenceFrameId =
+    ARCHIVE_FRAMES[f.job.id] ?? "M0000000000LE";
+}
 
 // Fill derived report numbers from the generated matches.
 for (const f of JOB_FIXTURES) {

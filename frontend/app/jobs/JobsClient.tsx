@@ -90,7 +90,7 @@ function NewJobCard({ onCreated }: { onCreated: (id: string) => void }) {
         disabled={busy}
         className="group mt-5 inline-flex items-center gap-2 rounded-md bg-signal px-5 py-3 font-mono text-sm font-semibold text-void ring-1 ring-signal/40 transition-colors hover:bg-bone disabled:opacity-50"
       >
-        {busy ? "QUEUING…" : "Register pair"}
+        {busy ? "QUEUING…" : "Start matching"}
         <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
       </button>
     </div>

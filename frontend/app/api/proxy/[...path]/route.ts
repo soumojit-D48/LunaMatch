@@ -91,6 +91,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ path: stri
       meta: body.meta ?? {
         sourceSensor: "OHRC",
         referenceSensor: "LRO NAC",
+        referenceFrameId: "M1414653521LE",
         sourceGsdM: 0.25,
         referenceGsdM: 0.6,
         sourceSunElevationDeg: 30,

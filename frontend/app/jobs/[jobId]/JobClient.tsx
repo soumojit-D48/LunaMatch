@@ -127,6 +127,16 @@ export default function JobDetail({ id }: { id: string }) {
             <p className="mt-2 font-mono text-xs text-mist">
               {MATCHER_LABELS[job.matcherType]} · {job.transformModel} · GSD {job.meta.sourceGsdM} → {job.meta.referenceGsdM} m/px · Δsun {job.meta.sunDeltaDeg}°
             </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-xl bg-void/60 p-4 ring-1 ring-line">
+                <div className="font-mono text-[10px] tracking-[0.16em] text-ash">SOURCE · YOUR UPLOAD</div>
+                <div className="mt-1 font-mono text-xs text-bone">{job.meta.sourceSensor} frame</div>
+              </div>
+              <div className="rounded-xl bg-signal/5 p-4 ring-1 ring-signal/25">
+                <div className="font-mono text-[10px] tracking-[0.16em] text-signal">REFERENCE · AUTO-MATCHED FROM ARCHIVE</div>
+                <div className="mt-1 font-mono text-xs text-bone">{job.meta.referenceSensor} · {job.meta.referenceFrameId ?? "matching archive…"}</div>
+              </div>
+            </div>
 
             {job.status === "FAILED" ? (
               <div className="mt-6 rounded-xl bg-destructive/10 p-5 font-mono text-xs leading-relaxed text-destructive ring-1 ring-destructive/30">
