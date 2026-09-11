@@ -13,7 +13,7 @@ import { Metrics } from "@/components/landing/metrices";
 import { Sensors } from "@/components/landing/sensors";
 import { Boot } from "@/components/landing/boot";
 
-const TITLE = "LunaMatch — Chandrayaan-2 lunar image registration";
+const TITLE = "LunarSync — Chandrayaan-2 lunar image registration";
 const DESCRIPTION =
   "Sun-angle, scale and viewpoint invariant image correspondence between Chandrayaan-2 optical imagery (OHRC, TMC-2, IIRS) and lunar reference frames.";
 

@@ -17,11 +17,11 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LunaMatch",
+  title: "LunarSync",
   description: "Multi-modal lunar image correspondence.",
   openGraph: {
     type: "website",
-    title: "LunaMatch",
+    title: "LunarSync",
     description: "Multi-modal lunar image correspondence.",
   },
   twitter: {

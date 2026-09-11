@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import JobsPage from "./JobsClient";
 
 export const metadata: Metadata = {
-  title: "Jobs — LunaMatch",
+  title: "Jobs — LunarSync",
   description: "Registration job history and new pair submission.",
 };
 

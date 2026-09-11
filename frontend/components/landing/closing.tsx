@@ -44,7 +44,7 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-line/60">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-6 font-mono text-[10px] tracking-[0.12em] text-ash sm:px-8">
-        <span>LunaMatch · MULTI-MODAL LUNAR IMAGE CORRESPONDENCE</span>
+        <span>LunarSync · MULTI-MODAL LUNAR IMAGE CORRESPONDENCE</span>
         <span>ISRO · DEPARTMENT OF SPACE</span>
       </div>
     </footer>

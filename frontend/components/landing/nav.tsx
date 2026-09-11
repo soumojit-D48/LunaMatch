@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { ArrowRight, Menu, X } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 
 const LINKS = [
@@ -54,7 +54,7 @@ export function Nav() {
               <span className="reticle size-2 rounded-full bg-signal" />
             </span>
             <span className="leading-none">
-              <span className="block text-sm font-semibold tracking-tight">LunaMatch</span>
+              <span className="block text-sm font-semibold tracking-tight">LunarSync</span>
               <span className="block font-mono text-[10px] tracking-[0.2em] text-ash">
                 LUNAR REGISTRATION
               </span>
@@ -84,9 +84,10 @@ export function Nav() {
             <ThemeToggle />
             <a
               href="/jobs"
-              className="hidden rounded-md bg-bone px-4 py-2 font-mono text-xs font-medium text-void ring-1 ring-white/20 transition-colors hover:bg-white sm:inline-block"
+              className="group hidden items-center gap-1.5 rounded-md bg-bone px-4 py-2 font-mono text-xs font-medium text-void ring-1 ring-white/20 transition-colors hover:bg-white sm:inline-flex"
             >
               Console
+              <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
             </a>
             <button
               type="button"
@@ -129,9 +130,10 @@ export function Nav() {
           <a
             href="/jobs"
             onClick={() => setOpen(false)}
-            className="mt-3 block rounded-md bg-bone px-4 py-2 text-center text-xs font-medium text-void"
+            className="mt-3 flex items-center justify-center gap-1.5 rounded-md bg-bone px-4 py-2 text-center text-xs font-medium text-void"
           >
             Console
+            <ArrowRight className="size-3.5" />
           </a>
         </nav>
       ) : null}

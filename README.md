@@ -1,4 +1,6 @@
-# LunaMatch
+# LunarSync
+**LunarSync — Multi-modal Lunar Image Registration System**
+*Different sun. Different scale. Same ground.⚡*
 
 > Sun-angle, scale & viewpoint-invariant image correspondence between Chandrayaan-2 optical imagery (OHRC · TMC-2 · IIRS) and lunar reference frames (LRO NAC · SELENE TC).
 
@@ -14,7 +16,9 @@
 [![MinIO S3](https://img.shields.io/badge/MinIO-S3_compatible-C00000)](docs/ARCHITECTURE.md)
 [![Docker](https://img.shields.io/badge/Docker-compose-2496ED?logo=docker&logoColor=white)](docker-compose.yml)
 
-**The problem.** Almost every lunar-science product — landing-site hazard maps, DEMs, mineral maps, change detection — silently assumes pixel *(x, y)* in a Chandrayaan-2 frame and pixel *(x, y)* in a reference mosaic mean the same spot on the ground. When source and reference differ by up to **300× in ground-sample distance**, were shot at different sun angles (razor-sharp lunar shadows move), and from different viewpoints, that assumption breaks. LunaMatch is the system that re-establishes it.
+![LunarSync landing hero — source ↔ reference correspondence visual](frontend/public/hero.png)
+
+**The problem.** Almost every lunar-science product — landing-site hazard maps, DEMs, mineral maps, change detection — silently assumes pixel *(x, y)* in a Chandrayaan-2 frame and pixel *(x, y)* in a reference mosaic mean the same spot on the ground. When source and reference differ by up to **300× in ground-sample distance**, were shot at different sun angles (razor-sharp lunar shadows move), and from different viewpoints, that assumption breaks. LunarSync is the system that re-establishes it.
 
 **What it produces** for each source → reference pair:
 
@@ -351,7 +355,7 @@ Queryable state (above) lives in PostgreSQL; pixel blobs (raw / interim / regist
 
 ## 🧠 Matcher System (no autonomous agents)
 
-LunaMatch has **no LLM/agent framework** — "agentic" here means the pipeline's matcher-selection and fallback logic, not AI agents. The decision flow:
+LunarSync has **no LLM/agent framework** — "agentic" here means the pipeline's matcher-selection and fallback logic, not AI agents. The decision flow:
 
 ```mermaid
 flowchart TD
@@ -403,7 +407,7 @@ API-level overrides win over the sensor-pair YAML, which wins over hardcoded pip
 Actual top level (verified):
 
 ```text
-LunaMatch/
+LunarSync/
 ├── frontend/            # Next.js 16 + React 19 + TypeScript (landing page implemented)
 ├── backend/             # FastAPI + Celery + pipeline (SPECIFIED in docs/, .gitkeep only for now)
 ├── infra/               # Docker / compose / Nginx / k8s (SPECIFIED, .gitkeep only for now)
@@ -417,18 +421,6 @@ LunaMatch/
 ├── .env.example         # Shared env template
 └── README.md            # This file
 ```
-
-| Directory | Responsibility | Status |
-|---|---|---|
-| `frontend/` | Upload UX, job pages, deep-zoom viewer, overlays, metric dashboards, API proxy routes | 🟢 Landing page live; app routes (`jobs/`, `compare/`, `viewer/`, hooks, `api-client`) per `docs/PROJECT_STRUCTURE.md` §2 are next |
-| `backend/` | `app/` (FastAPI routes, schemas, DB, storage, tasks) + `pipeline/` (framework-agnostic CV/ML) + tests | 🟡 Fully specified in `docs/`; not yet scaffolded |
-| `infra/` | `docker/` (Nginx, MinIO init), `compose/` (dev, gpu override, prod), `k8s/` (stretch) | 🟡 Specified; single-host compose is the MVP, k8s is a stretch goal |
-| `docs/` | Problem analysis, tech stack, structure, architecture | 🟢 Complete — start here |
-| `configs/` | `sensor_pairs/*.yaml` + `pipeline_defaults.yaml` | 🟡 Specified |
-| `data/` | `raw/`, `interim/` (gitignored), `ground_truth/`, `samples/` (committed crops for CI/demo) | 🟡 Specified |
-| `scripts/` | Model fetcher, single-pair CLI, benchmark CLI, synthetic ground-truth generator | 🟡 Specified |
-
-The intended data flow through the tree: `frontend/components/upload/` → `frontend/lib/api-client.ts` → `backend/app/api/routes/` → `backend/app/storage/` + `backend/app/db/` → Celery task → `backend/pipeline/run_pipeline.py` → results → `frontend/hooks/useJobStatus.ts` → `frontend/components/viewer` + `metrics/`.
 
 ---
 
@@ -479,8 +471,8 @@ Verified against `frontend/package.json`, `.nvmrc`, `.python-version`, `Makefile
 ### 1. Clone
 
 ```bash
-git clone <repo-url> LunaMatch
-cd LunaMatch
+git clone <repo-url> LunarSync
+cd LunarSync
 ```
 
 ### 2. Environment
@@ -537,11 +529,11 @@ Root/shared variables only (source of truth: `.env.example`). Service-specific o
 
 | Variable | Required | Used by | Description |
 |---|---|---|---|
-| `DATABASE_URL` | Yes | FastAPI, workers | SQLAlchemy URL, e.g. `postgresql+psycopg://lunamatch:lunamatch@localhost:5432/lunamatch` |
+| `DATABASE_URL` | Yes | FastAPI, workers | SQLAlchemy URL, e.g. `postgresql+psycopg://lunarsync:lunarsync@localhost:5432/lunarsync` |
 | `REDIS_URL` | Yes | FastAPI, workers | Celery broker + result backend, e.g. `redis://localhost:6379/0` |
 | `MINIO_ENDPOINT` | Yes | FastAPI, workers | Object storage endpoint (`localhost:9000` locally) |
 | `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` | Yes | MinIO | Local dev credentials — change from defaults |
-| `MINIO_BUCKET` | Yes | FastAPI, workers | Bucket for raw/interim/output images (`lunamatch`) |
+| `MINIO_BUCKET` | Yes | FastAPI, workers | Bucket for raw/interim/output images (`lunarsync`) |
 | `MINIO_SECURE` | No | FastAPI, workers | `false` locally, `true` against TLS S3 endpoints |
 | `NEXT_PUBLIC_API_URL` | Yes | Frontend | Browser-reachable FastAPI base URL |
 | `MODEL_DEVICE` | No | GPU worker | `cuda` \| `cpu` — worker auto-falls back to the CPU classical pipeline without a GPU |
@@ -712,4 +704,4 @@ Only practices actually specified are claimed: multipart uploads validated by Py
 
 ## 📄 License
 
-MIT — see [LICENSE](LICENSE). © 2026 LunaMatch Contributors.
+MIT — see [LICENSE](LICENSE). © 2026 LunarSync Contributors.

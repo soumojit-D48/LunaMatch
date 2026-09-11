@@ -20,7 +20,7 @@ export function ConsoleNav() {
             <span className="reticle size-2 rounded-full bg-signal" />
           </span>
           <span className="leading-none">
-            <span className="block text-sm font-semibold tracking-tight">LunaMatch</span>
+            <span className="block text-sm font-semibold tracking-tight">LunarSync</span>
             <span className="block font-mono text-[10px] tracking-[0.2em] text-ash">CONSOLE</span>
           </span>
         </Link>

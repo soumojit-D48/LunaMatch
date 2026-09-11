@@ -9,7 +9,7 @@ type ThemeState = {
   setTheme: (theme: Theme) => void;
 };
 
-export const THEME_STORAGE_KEY = "lunamatch-theme";
+export const THEME_STORAGE_KEY = "lunarsync-theme";
 
 export const useThemeStore = create<ThemeState>()(
   persist(

@@ -93,7 +93,7 @@ export function Hero() {
             transition={{ duration: 0.5, delay: 0.55 }}
             className="mt-5 max-w-[46ch] text-pretty text-base text-mist sm:text-lg"
           >
-            LunaMatch finds which pixel in a Chandrayaan-2 image is which pixel in a
+            LunarSync finds which pixel in a Chandrayaan-2 image is which pixel in a
             lunar reference image — across a 300× resolution gap, opposite shadow
             directions and different viewing geometry — then warps the source frame
             into register and reports how good the fit actually is.

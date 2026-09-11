@@ -12,7 +12,7 @@ const PHASES = [
   "SIGNAL LOCK",
 ];
 
-const KEY = "lunamatch-booted";
+const KEY = "lunarsync-booted";
 const DURATION_MS = 2200;
 
 /** Full-screen instrument boot overlay. Plays once per session, then hands off to the hero. */
@@ -83,7 +83,7 @@ export function Boot() {
             >
               <span className="reticle size-3 rounded-full bg-signal" />
             </motion.div>
-            <div className="mt-5 text-lg font-semibold tracking-tight text-bone">LunaMatch</div>
+            <div className="mt-5 text-lg font-semibold tracking-tight text-bone">LunarSync</div>
             <div className="mt-1 font-mono text-[10px] tracking-[0.24em] text-ash">
               LUNAR REGISTRATION CONSOLE
             </div>

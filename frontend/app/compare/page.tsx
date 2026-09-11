@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import ComparePage from "./CompareClient";
 
 export const metadata: Metadata = {
-  title: "Compare — LunaMatch",
+  title: "Compare — LunarSync",
   description: "Learned vs classical matcher comparison on the same tile.",
 };
 
