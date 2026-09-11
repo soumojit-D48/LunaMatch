@@ -25,7 +25,6 @@ const inputCls =
 
 function NewJobCard({ onCreated }: { onCreated: (id: string) => void }) {
   const [srcName, setSrcName] = useState("");
-  const [refName, setRefName] = useState("");
   const [source, setSource] = useState<(typeof SOURCES)[number]>("OHRC");
   const [reference, setReference] = useState<(typeof REFERENCES)[number]>("LRO NAC");
   const [matcher, setMatcher] = useState<MatcherType>("superpoint-superglue");
@@ -52,26 +51,22 @@ function NewJobCard({ onCreated }: { onCreated: (id: string) => void }) {
         <Upload className="size-4 text-signal" />
         <h2 className="font-mono text-xs tracking-[0.18em] text-bone">NEW REGISTRATION</h2>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        {[
-          { label: "SOURCE IMAGE · MOVING", name: srcName, set: setSrcName, accept: ".tif,.tiff,.img,.png,.jpg" },
-          { label: "REFERENCE IMAGE · FIXED", name: refName, set: setRefName, accept: ".tif,.tiff,.img,.png,.jpg" },
-        ].map((f) => (
-          <label
-            key={f.label}
-            className="block cursor-pointer rounded-lg border border-dashed border-line p-5 text-center transition-colors hover:border-signal/60 hover:bg-signal/5"
-          >
-            <span className="mb-1 block font-mono text-[10px] tracking-[0.16em] text-ash">{f.label}</span>
-            <span className="block truncate font-mono text-xs text-bone">{f.name || "Drop file or click to browse"}</span>
-            <input type="file" accept={f.accept} className="hidden" onChange={(e) => f.set(e.target.files?.[0]?.name ?? "")} />
-          </label>
-        ))}
+      <label className="block cursor-pointer rounded-lg border border-dashed border-line p-6 text-center transition-colors hover:border-signal/60 hover:bg-signal/5">
+        <span className="mb-1 block font-mono text-[10px] tracking-[0.16em] text-ash">SOURCE IMAGE · UPLOAD</span>
+        <span className="block truncate font-mono text-xs text-bone">{srcName || "Drop your Chandrayaan-2 frame here or click to browse"}</span>
+        <span className="mt-1 block font-mono text-[10px] text-ash">GEOTIFF · PDS/IMG · PNG · JPG</span>
+        <input type="file" accept=".tif,.tiff,.img,.lbl,.png,.jpg" className="hidden" onChange={(e) => setSrcName(e.target.files?.[0]?.name ?? "")} />
+      </label>
+      <p className="mt-3 font-mono text-[10px] leading-relaxed tracking-[0.08em] text-ash">
+        REFERENCE FRAMES ARE SERVED FROM THE BUILT-IN LRO / SELENE ARCHIVE — UPLOAD ONLY YOUR SOURCE FRAME.
+      </p>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <Field label="SOURCE SENSOR">
           <select value={source} onChange={(e) => setSource(e.target.value as typeof source)} className={inputCls}>
             {SOURCES.map((s) => <option key={s}>{s}</option>)}
           </select>
         </Field>
-        <Field label="REFERENCE SENSOR">
+        <Field label="REFERENCE · FROM ARCHIVE">
           <select value={reference} onChange={(e) => setReference(e.target.value as typeof reference)} className={inputCls}>
             {REFERENCES.map((s) => <option key={s}>{s}</option>)}
           </select>
