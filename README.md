@@ -16,7 +16,16 @@
 [![MinIO S3](https://img.shields.io/badge/MinIO-S3_compatible-C00000)](docs/ARCHITECTURE.md)
 [![Docker](https://img.shields.io/badge/Docker-compose-2496ED?logo=docker&logoColor=white)](docker-compose.yml)
 
-![LunarSync landing hero — source ↔ reference correspondence visual](frontend/public/hero.png)
+<p align="center">
+  <a href="https://lunar-syncc.vercel.app/">
+    <img src="https://img.shields.io/badge/🌐_Try_the_Live_Demo-▲_lunar--sync.vercel.app-black?style=for-the-badge" alt="Try the live demo" />
+  </a>
+</p>
+<p align="center">
+  <em>Landing experience · registration job console with live pipeline tracking · learned-vs-classical comparison — no setup needed.</em>
+</p>
+
+[![LunarSync landing hero — click to open the live demo](frontend/public/hero.png)](https://lunar-syncc.vercel.app/)
 
 **The problem.** Almost every lunar-science product — landing-site hazard maps, DEMs, mineral maps, change detection — silently assumes pixel *(x, y)* in a Chandrayaan-2 frame and pixel *(x, y)* in a reference mosaic mean the same spot on the ground. When source and reference differ by up to **300× in ground-sample distance**, were shot at different sun angles (razor-sharp lunar shadows move), and from different viewpoints, that assumption breaks. LunarSync is the system that re-establishes it.
 
