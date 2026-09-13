@@ -152,8 +152,26 @@ export default function JobDetail({ id }: { id: string }) {
               <div className="mt-8 space-y-8">
                 <section>
                   <h2 className="mb-3 font-mono text-[11px] tracking-[0.2em] text-signal">MATCH EVIDENCE</h2>
-                  <MatchViewer matches={result.matches} sourceImg={sourceImg} referenceImg={referenceImg} />
+                  <MatchViewer
+                    matches={result.matches}
+                    sourceImg={result.images?.source ?? sourceImg}
+                    referenceImg={result.images?.reference ?? referenceImg}
+                    sourceLabel={result.images ? "SOURCE · your upload" : undefined}
+                    referenceLabel={result.images ? "REFERENCE · archive match" : undefined}
+                  />
                 </section>
+                {result.images ? (
+                  <section>
+                    <h2 className="mb-3 font-mono text-[11px] tracking-[0.2em] text-signal">REGISTERED PRODUCT · WARPED</h2>
+                    <div className="overflow-hidden rounded-xl ring-1 ring-line">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={result.images.warped} alt="Warped source registered to reference" className="aspect-[16/9] w-full object-cover" />
+                    </div>
+                    <p className="mt-2 font-mono text-[10px] tracking-[0.08em] text-ash">
+                      SOURCE WARPED INTO THE REFERENCE FRAME · HOMOGRAPHY FROM {result.report.inlierCount} INLIERS
+                    </p>
+                  </section>
+                ) : null}
                 <section>
                   <h2 className="mb-3 font-mono text-[11px] tracking-[0.2em] text-signal">EVALUATION</h2>
                   <div className="grid gap-3 lg:grid-cols-[1fr_280px]">
@@ -167,6 +185,29 @@ export default function JobDetail({ id }: { id: string }) {
                     {JSON.stringify(result.transform.parameters, null, 2)}
                   </pre>
                 </section>
+                {result.report.sweep && result.report.sweep.length > 0 ? (
+                  <section>
+                    <h2 className="mb-3 font-mono text-[11px] tracking-[0.2em] text-signal">ARCHIVE SWEEP · {result.report.sweep.length} FRAME{result.report.sweep.length === 1 ? "" : "S"}</h2>
+                    <div className="overflow-hidden rounded-xl ring-1 ring-line">
+                      <div className="grid grid-cols-[1fr_auto_auto_auto] gap-3 border-b border-line/60 bg-surface/60 px-4 py-2.5 font-mono text-[10px] tracking-[0.14em] text-ash sm:grid-cols-[1fr_140px_80px_80px_80px]">
+                        <span>FRAME</span>
+                        <span className="hidden sm:block">LAT / LON</span>
+                        <span className="text-right">SCORE %</span>
+                        <span className="text-right">INLIERS</span>
+                        <span className="hidden text-right sm:block">RMSE</span>
+                      </div>
+                      {result.report.sweep.map((s, i) => (
+                        <div key={s.file} className={`grid grid-cols-[1fr_auto_auto_auto] items-center gap-3 border-b border-line/40 px-4 py-2.5 font-mono text-[11px] last:border-0 sm:grid-cols-[1fr_140px_80px_80px_80px] ${i === 0 ? "bg-signal/5" : ""}`}>
+                          <span className="truncate text-bone">{i === 0 ? "★ " : ""}{s.file}</span>
+                          <span className="hidden text-mist sm:block">{s.lat ?? "?"} / {s.lon ?? "?"}</span>
+                          <span className="text-right tabular text-bone">{s.score.toFixed(1)}</span>
+                          <span className="text-right tabular text-mist">{s.inliers}</span>
+                          <span className="hidden text-right tabular text-mist sm:block">{s.rmse.toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                ) : null}
                 <section>
                   <h2 className="mb-3 font-mono text-[11px] tracking-[0.2em] text-signal">DOWNLOADS</h2>
                   <Downloads result={result} />

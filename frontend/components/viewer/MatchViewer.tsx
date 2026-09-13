@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   matches: MatchPoint[];
-  sourceImg: StaticImageData;
-  referenceImg: StaticImageData;
+  sourceImg: StaticImageData | string;
+  referenceImg: StaticImageData | string;
   sourceLabel?: string;
   referenceLabel?: string;
 };
@@ -43,7 +43,30 @@ function MarkerLayer({
 export function MatchViewer({ matches, sourceImg, referenceImg, sourceLabel = "SOURCE · moving", referenceLabel = "REFERENCE · fixed" }: Props) {
   const [mode, setMode] = useState<"split" | "blend">("split");
   const [showOutliers, setShowOutliers] = useState(true);
+  const [showAll, setShowAll] = useState(false);
   const [blend, setBlend] = useState(50);
+
+  // Readability cap: 150 markers on one panel is a blue blob. Grid-sample
+  // for display (one per cell = even spread, not scanline rows); full set
+  // stays in CSV + counts.
+  const MAX_DRAWN = 40;
+  const visible = matches.filter((m) => m.isInlier || showOutliers);
+  const drawn = (() => {
+    if (showAll || visible.length <= MAX_DRAWN) return visible;
+    const GX = 8, GY = 5;
+    const seen = new Set<number>();
+    const picked: typeof visible = [];
+    for (const m of visible) {
+      const cx = Math.min(GX - 1, Math.floor(m.srcX * GX));
+      const cy = Math.min(GY - 1, Math.floor(m.srcY * GY));
+      const cell = cy * GX + cx;
+      if (!seen.has(cell)) {
+        seen.add(cell);
+        picked.push(m);
+      }
+    }
+    return picked;
+  })();
 
   return (
     <div>
@@ -73,8 +96,19 @@ export function MatchViewer({ matches, sourceImg, referenceImg, sourceLabel = "S
         >
           {showOutliers ? "HIDE OUTLIERS" : "SHOW OUTLIERS"}
         </button>
+        {visible.length > MAX_DRAWN && (
+          <button
+            type="button"
+            onClick={() => setShowAll((v) => !v)}
+            className="rounded-md px-3 py-1.5 font-mono text-[11px] tracking-[0.1em] text-mist ring-1 ring-line transition-colors hover:text-bone"
+          >
+            {showAll ? `SHOW ${MAX_DRAWN}` : `SHOW ALL ${visible.length}`}
+          </button>
+        )}
         <span className="ml-auto font-mono text-[10px] tracking-[0.12em] text-ash">
-          {matches.filter((m) => m.isInlier).length}/{matches.length} INLIERS · NUMBERS LINK BOTH PANELS
+          {matches.filter((m) => m.isInlier).length}/{matches.length} INLIERS
+          {visible.length > MAX_DRAWN && !showAll ? ` · DRAWING ${drawn.length}` : ""}
+          {" "}· NUMBERS LINK BOTH PANELS
         </span>
       </div>
 
@@ -85,8 +119,8 @@ export function MatchViewer({ matches, sourceImg, referenceImg, sourceLabel = "S
             { img: referenceImg, label: referenceLabel, coord: (m: MatchPoint): [number, number] => [m.refX, m.refY] },
           ].map((p) => (
             <figure key={p.label} className="relative overflow-hidden rounded-xl bg-panel ring-1 ring-white/10">
-              <Image src={p.img} alt={p.label} className="aspect-square w-full object-cover" />
-              <MarkerLayer points={matches} coord={p.coord} showOutliers={showOutliers} />
+              <Image src={p.img} alt={p.label} width={800} height={450} className="aspect-square w-full object-cover" />
+              <MarkerLayer points={drawn} coord={p.coord} showOutliers={showOutliers} />
               <figcaption className="absolute left-2 top-2 rounded bg-void/70 px-2 py-0.5 font-mono text-[9px] tracking-[0.12em] text-mist">
                 {p.label}
               </figcaption>
@@ -95,9 +129,9 @@ export function MatchViewer({ matches, sourceImg, referenceImg, sourceLabel = "S
         </div>
       ) : (
         <div className="relative overflow-hidden rounded-xl bg-panel ring-1 ring-white/10">
-          <Image src={referenceImg} alt={referenceLabel} className="aspect-[16/9] w-full object-cover" />
+          <Image src={referenceImg} alt={referenceLabel} width={800} height={450} className="aspect-[16/9] w-full object-cover" />
           <div className="absolute inset-0 overflow-hidden" style={{ clipPath: `inset(0 ${100 - blend}% 0 0)` }}>
-            <Image src={sourceImg} alt={sourceLabel} className="aspect-[16/9] w-full object-cover opacity-70 mix-blend-screen" />
+            <Image src={sourceImg} alt={sourceLabel} width={800} height={450} className="aspect-[16/9] w-full object-cover opacity-70 mix-blend-screen" />
           </div>
           <div aria-hidden className="pointer-events-none absolute inset-y-0 w-px bg-signal" style={{ left: `${blend}%` }} />
           <span className="absolute left-2 top-2 rounded bg-void/70 px-2 py-0.5 font-mono text-[9px] text-mist">SRC</span>

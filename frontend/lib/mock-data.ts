@@ -21,6 +21,17 @@ export type Transform = {
   parameters: number[]; // 3x3 row-major
 };
 
+export type SweepEntry = {
+  file: string;
+  lat?: string;
+  lon?: string;
+  score: number;
+  inliers: number;
+  rmse: number;
+  runtimeS?: number;
+  error?: string;
+};
+
 export type EvaluationReport = {
   rmseX: number;
   rmseY: number;
@@ -30,6 +41,7 @@ export type EvaluationReport = {
   processingTimeS: number;
   reliability: Reliability;
   reliabilityReason?: string;
+  sweep?: SweepEntry[];
 };
 
 export type ImagePairMeta = {
@@ -63,6 +75,11 @@ export type JobResult = {
   matches: MatchPoint[];
   transform: Transform;
   report: EvaluationReport;
+  images?: {
+    source: string;
+    reference: string;
+    warped: string;
+  };
 };
 
 export const STAGES = [

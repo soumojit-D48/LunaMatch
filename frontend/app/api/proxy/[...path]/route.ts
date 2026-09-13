@@ -14,6 +14,29 @@ import {
 let store: Map<string, JobFixture> | null = null;
 const polls = new Map<string, number>();
 
+// Live backend (FastAPI). When reachable, real notebook-pipeline results flow
+// through; otherwise everything falls back to the mock store above.
+const BACKEND = process.env.BACKEND_URL ?? "http://localhost:8000";
+
+async function fromBackend(path: string, init?: RequestInit) {
+  const r = await fetch(`${BACKEND}/api/${path}`, { ...init, cache: "no-store" });
+  if (!r.ok) throw new Error(`backend ${r.status}`);
+  return r.json();
+}
+
+function withProxyImages(result: any) {
+  if (result?.images) {
+    const id = result.job?.id ?? "";
+    const images: Record<string, string> = {};
+    for (const [k, v] of Object.entries(result.images)) {
+      const name = String(v).split("/").pop();
+      images[k] = `/api/proxy/files/${id}/${name}`;
+    }
+    return { ...result, images };
+  }
+  return result;
+}
+
 function getStore(): Map<string, JobFixture> {
   if (!store) {
     store = new Map(
@@ -46,10 +69,38 @@ function advance(job: Job): Job {
 
 export async function GET(_req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
   const segments = (await ctx.params).path ?? [];
+
+  // Same-origin image bytes for live-backend job artifacts.
+  if (segments.length === 3 && segments[0] === "files") {
+    const r = await fetch(`${BACKEND}/outputs/${segments[1]}/${segments[2]}`, { cache: "no-store" });
+    if (!r.ok) return NextResponse.json({ error: "file not found" }, { status: 404 });
+    const buf = await r.arrayBuffer();
+    return new Response(buf, { headers: { "Content-Type": "image/jpeg", "Cache-Control": "public, max-age=3600" } });
+  }
+
+  // Live-backend jobs (live-*) go straight to FastAPI; mock jobs (job-*)
+  // are served locally. No cross-talk, no 404 noise in the backend log.
+  // (The /jobs list is merged further below.)
+  if (segments.length >= 2 && segments[0] === "jobs" && segments[1].startsWith("live-")) {
+    try {
+      const data = await fromBackend(segments.join("/"));
+      return NextResponse.json(data?.job && data?.matches ? withProxyImages(data) : data);
+    } catch {
+      /* fall through to mock (404 there if truly unknown) */
+    }
+  }
+
   const s = getStore();
 
   if (segments.length === 1 && segments[0] === "jobs") {
-    return NextResponse.json({ jobs: [...s.values()].map((f) => f.job) });
+    const mockJobs = [...s.values()].map((f) => f.job);
+    try {
+      const data = await fromBackend("jobs");
+      const liveJobs = Array.isArray(data?.jobs) ? data.jobs : [];
+      return NextResponse.json({ jobs: [...liveJobs, ...mockJobs] });
+    } catch {
+      return NextResponse.json({ jobs: mockJobs });
+    }
   }
   if (segments.length === 2 && segments[0] === "jobs") {
     const f = s.get(segments[1]);
@@ -77,6 +128,21 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ path: stri
   const segments = (await ctx.params).path ?? [];
   if (segments.length !== 1 || segments[0] !== "jobs") {
     return NextResponse.json({ error: "unknown endpoint" }, { status: 404 });
+  }
+  // Real upload with file bytes → forward to the live backend (notebook pipeline).
+  const contentType = req.headers.get("content-type") ?? "";
+  if (contentType.includes("multipart/form-data")) {
+    try {
+      const form = await req.formData();
+      const r = await fetch(`${BACKEND}/api/jobs`, { method: "POST", body: form });
+      if (!r.ok) throw new Error(`backend ${r.status}`);
+      return NextResponse.json(await r.json(), { status: 201 });
+    } catch (e) {
+      return NextResponse.json(
+        { error: `live backend unreachable (${e instanceof Error ? e.message : "error"}). Start it with: uvicorn main:app --port 8000` },
+        { status: 502 },
+      );
+    }
   }
   const body = (await req.json().catch(() => ({}))) as Partial<Job> & {
     matches?: MatchPoint[];

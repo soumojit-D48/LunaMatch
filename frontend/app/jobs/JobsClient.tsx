@@ -25,21 +25,29 @@ const inputCls =
 
 function NewJobCard({ onCreated }: { onCreated: (id: string) => void }) {
   const [srcName, setSrcName] = useState("");
+  const [srcFile, setSrcFile] = useState<File | null>(null);
   const [source, setSource] = useState<(typeof SOURCES)[number]>("OHRC");
   const [reference, setReference] = useState<(typeof REFERENCES)[number]>("LRO NAC");
   const [matcher, setMatcher] = useState<MatcherType>("superpoint-superglue");
   const [model, setModel] = useState<TransformModel>("homography");
   const [busy, setBusy] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const submit = async () => {
     setBusy(true);
+    setSubmitError(null);
     try {
       const { jobId } = await createJob({
         pairLabel: `${source} ↔ ${reference} · ${srcName || "uploaded frame"}`,
         matcherType: matcher,
         transformModel: model,
+        sourceFile: srcFile ?? undefined,
+        sourceSensor: source,
+        referenceSensor: reference,
       });
       onCreated(jobId);
+    } catch (e) {
+      setSubmitError(e instanceof Error ? e.message : "Upload failed — is the live backend running?");
     } finally {
       setBusy(false);
     }
@@ -55,10 +63,12 @@ function NewJobCard({ onCreated }: { onCreated: (id: string) => void }) {
         <span className="mb-1 block font-mono text-[10px] tracking-[0.16em] text-ash">SOURCE IMAGE · UPLOAD</span>
         <span className="block truncate font-mono text-xs text-bone">{srcName || "Drop your Chandrayaan-2 frame here or click to browse"}</span>
         <span className="mt-1 block font-mono text-[10px] text-ash">GEOTIFF · PDS/IMG · PNG · JPG</span>
-        <input type="file" accept=".tif,.tiff,.img,.lbl,.png,.jpg" className="hidden" onChange={(e) => setSrcName(e.target.files?.[0]?.name ?? "")} />
+        <input type="file" accept=".tif,.tiff,.img,.lbl,.png,.jpg" className="hidden" onChange={(e) => { const f = e.target.files?.[0] ?? null; setSrcFile(f); setSrcName(f?.name ?? ""); }} />
       </label>
       <p className="mt-3 font-mono text-[10px] leading-relaxed tracking-[0.08em] text-ash">
-        REFERENCE FRAMES ARE SERVED FROM THE BUILT-IN LRO / SELENE ARCHIVE — UPLOAD ONLY YOUR SOURCE FRAME.
+        {srcFile
+          ? "LIVE BACKEND — YOUR FILE IS SWEPT AGAINST ALL 16 ARCHIVE FRAMES."
+          : "REFERENCE FRAMES ARE SERVED FROM THE BUILT-IN LRO / SELENE ARCHIVE — UPLOAD ONLY YOUR SOURCE FRAME."}
       </p>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <Field label="SOURCE SENSOR">
@@ -93,6 +103,9 @@ function NewJobCard({ onCreated }: { onCreated: (id: string) => void }) {
         {busy ? "QUEUING…" : "Start matching"}
         <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
       </button>
+      {submitError ? (
+        <p className="mt-3 font-mono text-[11px] leading-relaxed text-destructive">{submitError}</p>
+      ) : null}
     </div>
   );
 }

@@ -41,7 +41,24 @@ export function createJob(input: {
   pairLabel: string;
   matcherType: MatcherType;
   transformModel: TransformModel;
+  sourceFile?: File;
+  referenceFile?: File;
+  sourceSensor?: string;
+  referenceSensor?: string;
 }) {
+  if (input.sourceFile) {
+    const form = new FormData();
+    form.append("source", input.sourceFile);
+    if (input.referenceFile) form.append("reference", input.referenceFile);
+    form.append("pairLabel", input.pairLabel);
+    form.append("matcherType", input.matcherType);
+    form.append("transformModel", input.transformModel);
+    if (input.sourceSensor) form.append("sourceSensor", input.sourceSensor);
+    if (input.referenceSensor) form.append("referenceSensor", input.referenceSensor);
+    return fetch(`${BASE}/jobs`, { method: "POST", body: form }).then((r) =>
+      json<{ jobId: string; job: Job }>(r),
+    );
+  }
   return fetch(`${BASE}/jobs`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

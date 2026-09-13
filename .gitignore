@@ -91,6 +91,10 @@ dmypy.json
 *.sqlite
 *.sqlite3
 
+# LunaMatch demo backend artifacts (per-job outputs, local uploads)
+backend/static/outputs/
+backend/data/uploads/
+
 # =========================
 # IDE / Editors
 # =========================
